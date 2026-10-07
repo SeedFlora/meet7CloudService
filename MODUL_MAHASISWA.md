@@ -43,6 +43,10 @@ docker compose ps
 
 `config --quiet` memeriksa sintaks Compose. `up -d --wait` membuat database dan Adminer, lalu menunggu healthcheck database. Profile `debug` menerbitkan Adminer hanya di `127.0.0.1:8087`; port PostgreSQL tidak diterbitkan ke host. `ps` harus menunjukkan `db` sehat dan `adminer` berjalan.
 
+![Validasi Docker, Compose, dan file password yang diabaikan Git](screenshots/09_setup_validasi.png)
+
+*Langkah: jalankan `docker version`, `docker compose config --quiet`, lalu `git check-ignore -v secrets/db_password.txt`. Fungsi: memastikan Docker tersedia, YAML valid, dan password lokal tidak masuk commit. Cara kerja: Docker melaporkan versi server; Compose memvalidasi model tanpa menjalankan container; Git mencocokkan path terhadap `.gitignore`. Baca hasil: semua command exit 0, `Compose config: valid`, dan aturan ignore untuk file password tampil. Ini render dari [output run aktual](screenshots/09_setup_validasi.txt), bukan screenshot terminal mentah.*
+
 ![Compose menampilkan database sehat dan Adminer](screenshots/01_compose_ready.png)
 
 *Langkah: jalankan `docker compose --profile debug up -d --wait` dan `docker compose ps`. Fungsi: memastikan database siap sebelum SQL dijalankan. Cara kerja: Compose membuat jaringan serta volume lab, menunggu `pg_isready`, dan memetakan port Adminer 8087 ke 8080 dalam container. Baca hasil: `db` Healthy dan `adminer` Up; port 5432 hanya internal.*
@@ -68,6 +72,10 @@ docker compose exec -T db psql -v ON_ERROR_STOP=1 -U labadmin -d lab07 < local-r
 ```
 
 `-T` mematikan pseudo-TTY agar input pipe/redirection diterima. `ON_ERROR_STOP=1` membuat command gagal bila SQL salah. `labadmin` dipakai untuk setup karena ia pemilik tabel; uji pembatasan nanti memakai `SET ROLE`.
+
+![Script setup SQL menghasilkan dua catatan contoh](screenshots/10_sql_setup.png)
+
+*Langkah: pipe `local-rls-demo.sql` ke `psql` dalam container `db`. Fungsi: membuat role, tabel, GRANT, policy RLS, dan data uji. Cara kerja: `psql` mengeksekusi statement berurutan dan berhenti saat error karena `ON_ERROR_STOP=1`. Baca hasil: `CREATE POLICY`, dua `INSERT 0 1`, dan satu baris Alice/Bob pada query uji; `NOTICE` bila tabel sudah ada adalah aman saat mengulang. [Output lengkap](screenshots/10_sql_setup.txt).*
 
 Periksa policy yang benar-benar tersimpan:
 
@@ -162,6 +170,12 @@ Keduanya membaca metadata/query dan sengaja mencoba satu INSERT yang harus ditol
 
 Bagian ini hanya bila proyek Supabase tersedia. Di **SQL Editor proyek Supabase**, jalankan `schema.sql`; file itu merujuk `auth.users` sehingga **jangan** dijalankan pada database Compose lokal. `vector-setup.sql` opsional untuk mengaktifkan extension di proyek. Buat dua akun latihan melalui Auth, salin `.env.example` ke `.env`, isi Project URL dan **publishable key**, lalu jalankan `npm ci`, `node --env-file=.env client-demo.mjs --signup` (bila akun baru), dan `npm run demo`. Ulangi dengan akun kedua. Jangan tampilkan email/password asli, service role/secret key, atau isi `.env` pada screenshot/Git.
 
+![Referensi Auth dan policy pada source SQL Supabase](screenshots/13_supabase_source.png)
+
+*Langkah: jalankan `rg -n 'auth\.uid|auth\.users|policy|storage|extension' schema.sql vector-setup.sql` sebelum membuka SQL Editor. Fungsi: mengenali bagian yang membutuhkan Supabase Auth. Cara kerja: pencarian hanya membaca source; tidak mengirim SQL ke cloud. Baca hasil: `auth.users` menjadi rujukan pemilik, dan policy memakai `auth.uid()` untuk baca/tulis. Ini bukti **persiapan source**, bukan screenshot eksekusi cloud. [Output lengkap](screenshots/13_supabase_source.txt).*
+
+Jalur tambahan ini belum mempunyai screenshot hasil Supabase di repo karena praktiknya memerlukan proyek/akun milik peserta. Jika mengerjakannya, ambil bukti dari SQL Editor, daftar user Auth yang disamarkan, dan hasil dua akun pada mesin Anda. Jangan menganggap screenshot demo PostgreSQL lokal sebagai bukti jalur Supabase.
+
 Di Supabase, Auth memastikan siapa pengguna. Policy `schema.sql` memakai `auth.uid()` untuk memastikan `user_id` pada baris sama dengan identitas JWT. Storage bucket latihan boleh dibuat **private**; akses objek tetap perlu policy yang dirancang. Jika email perlu verifikasi, selesaikan sebelum mencoba klien.
 
 ## 5. Laporan, Git, cleanup
@@ -180,12 +194,20 @@ git push
 
 Jika file laporan/bukti belum dibuat, buat dahulu atau sesuaikan `git add`. `.env` dan `secrets/db_password.txt` harus tetap tidak terlacak. Setelah bukti tersimpan:
 
+![Git memastikan file rahasia diabaikan](screenshots/11_git_aman.png)
+
+*Langkah: jalankan `git status --short`, `git check-ignore -v .env secrets/db_password.txt`, dan `git diff --cached --check`. Fungsi: memeriksa isi kerja sebelum commit. Cara kerja: status menampilkan perubahan, check-ignore menunjukkan aturan yang melindungi secret, dan diff check menemukan whitespace salah pada file yang sudah staged. Baca hasil: file rahasia terabaikan; cuplikan ini belum memiliki file staged, maka ulangi diff check **sesudah** `git add`. Screenshot ini belum membuktikan push; ambil bukti commit/push dari repo sendiri. [Output lengkap](screenshots/11_git_aman.txt).*
+
 ```powershell
 docker compose --profile debug down
 docker compose ps
 ```
 
 `down` menghentikan container; volume database tetap ada agar hasil dapat dibuka lagi. Jangan gunakan `down -v` kecuali memang ingin menghapus data latihan.
+
+![Compose down menyisakan volume data](screenshots/12_cleanup.png)
+
+*Langkah: jalankan `docker compose --profile debug down` lalu `docker compose --profile debug ps`. Fungsi: melepas container/jaringan lab seusai praktik. Cara kerja: Compose berhenti tanpa flag `-v`, sehingga volume tetap tersimpan. Baca hasil: container berhenti dan daftar `ps` kosong. Pada uji ulang, `up -d --wait` menghidupkan DB lagi dengan dua catatan dan tiga vektor yang tetap ada. [Output lengkap](screenshots/12_cleanup.txt).*
 
 ## Jika ada kendala
 

@@ -1,5 +1,7 @@
 # Modul mahasiswa Lab 07 — BaaS, Auth, RLS, dan pgvector
 
+**Kebijakan kelas:** Lab ini latihan formatif, tanpa tugas, nilai, atau penyerahan terpisah. Satu proyek besar dikerjakan oleh kelompok **3 orang**, dengan presentasi checkpoint minggu 7 (UTS) dan hasil akhir minggu 14 (UAS). Simpan hasil lab hanya bila berguna sebagai referensi atau bukti proses proyek. Baca [brief proyek kelompok](PROYEK_KELOMPOK.md). Bobot resmi tetap mengikuti RPS/LMS.
+
 **COMP6991031, sesi 07.** Modul ini memuat langkah dari awal sampai akhir, **kunci seluruh challenge A–F**, dan screenshot yang menerangkan perintah, fungsi, cara kerja, serta hasilnya. Jalur wajib berjalan lokal dengan Docker Compose. Jalur Supabase membutuhkan akun/proyek dan bersifat tambahan. Jalankan perintah dari **root repo meet7CloudService**.
 
 ## Kasus kerja dan hasil belajar
@@ -15,7 +17,7 @@ Dua staf, Alice dan Bob, menyimpan catatan dalam satu database. Jika frontend ke
 | pgvector | Menyimpan dan membandingkan vektor; contoh Lab 07 memakai tiga dimensi mainan. |
 | Supabase | Jalur cloud tambahan: Auth JWT, `auth.uid()`, SQL Editor, dan Storage. |
 
-**Batas bukti:** Screenshot terminal gelap adalah cuplikan output uji lokal aktual yang ditata agar mudah dibaca. Screenshot Adminer berasal dari Chrome saat container lab hidup. Nama container, waktu, ID, dan versi patch di laptopmu dapat berbeda. Kumpulkan screenshot **hasil praktik sendiri**.
+**Batas bukti:** Screenshot terminal gelap adalah cuplikan output uji lokal aktual yang ditata agar mudah dibaca. Screenshot Adminer berasal dari Chrome saat container lab hidup. Nama container, waktu, ID, dan versi patch di laptopmu dapat berbeda. Simpan screenshot **hasil praktik sendiri** bila bermanfaat untuk proyek kelompok.
 
 ## 0. Siapkan repo dan database
 

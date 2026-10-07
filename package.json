@@ -1,0 +1,11 @@
+{
+  "name": "cloud-notes-lab07",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "node --env-file=.env client-demo.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.117.2"
+  }
+}

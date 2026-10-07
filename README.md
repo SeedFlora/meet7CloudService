@@ -28,4 +28,3 @@ docker compose --profile debug down
 ```
 
 Rujukan: [RLS Supabase](https://supabase.com/docs/guides/database/postgres/row-level-security), [vector columns](https://supabase.com/docs/guides/ai/vector-columns), dan [pgvector](https://github.com/pgvector/pgvector).
-

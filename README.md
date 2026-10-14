@@ -33,6 +33,8 @@ Di Linux/Codespaces/Git Bash, gunakan `cp secrets/db_password.example.txt secret
 
 `vector-local-demo.sql` berisi vektor mainan tiga dimensi untuk memahami operator jarak; Lab 11 memakai embedding model untuk RAG. `schema.sql` dan `client-demo.mjs` adalah jalur Supabase opsional, bukan untuk database lokal ini. Jangan menaruh key rahasia atau password di Git.
 
+Untuk klien Supabase opsional, gunakan **Node.js minimal 22.0.0** sesuai `@supabase/supabase-js` yang terkunci pada `package-lock.json` dan [dukungan runtime Supabase](https://supabase.com/changelog/45715-deprecation-notice-dropping-support-for-node-js-20). Dari root repo jalankan `node --version` dan `npm --version`; pastikan hasil Node `v22.0.0` atau lebih baru sebelum `npm ci`. Ikuti [langkah Supabase pada modul](MODUL_MAHASISWA.md#4-jalur-supabase-tambahan) untuk konfigurasi dan uji dua akun. Jalur Docker/SQL lokal tidak memerlukan Node.
+
 Sesudah menyimpan bukti pribadi dan laporan, bersihkan container tanpa menghapus volume:
 
 ```powershell

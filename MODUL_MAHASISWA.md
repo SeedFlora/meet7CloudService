@@ -170,7 +170,16 @@ Keduanya membaca metadata/query dan sengaja mencoba satu INSERT yang harus ditol
 
 ## 4. Jalur Supabase tambahan
 
-Bagian ini hanya bila proyek Supabase tersedia. Di **SQL Editor proyek Supabase**, jalankan `schema.sql`; file itu merujuk `auth.users` sehingga **jangan** dijalankan pada database Compose lokal. `vector-setup.sql` opsional untuk mengaktifkan extension di proyek. Buat dua akun latihan melalui Auth, salin `.env.example` ke `.env`, isi Project URL dan **publishable key**, lalu jalankan `npm ci`, `node --env-file=.env client-demo.mjs --signup` (bila akun baru), dan `npm run demo`. Ulangi dengan akun kedua. Jangan tampilkan email/password asli, service role/secret key, atau isi `.env` pada screenshot/Git.
+Bagian ini hanya bila proyek Supabase tersedia. Jalur klien Node memakai **Node.js minimal 22.0.0** sesuai kebutuhan `@supabase/supabase-js` pada `package-lock.json` dan [pengumuman dukungan Node Supabase](https://supabase.com/changelog/45715-deprecation-notice-dropping-support-for-node-js-20). Jalur Docker/SQL wajib di atas tidak membutuhkan Node. Dari root repo periksa runtime terlebih dahulu:
+
+```bash
+node --version
+npm --version
+```
+
+`node --version` harus menunjukkan `v22.0.0` atau lebih baru; `npm --version` harus menampilkan nomor versi. Jika runtime lebih tua atau instalasi menampilkan `EBADENGINE`, siapkan Node 22+ di lingkungan praktik dan buka kembali terminal sebelum mengulang.
+
+Di **SQL Editor proyek Supabase**, jalankan `schema.sql`; file itu merujuk `auth.users` sehingga **jangan** dijalankan pada database Compose lokal. `vector-setup.sql` opsional untuk mengaktifkan extension di proyek. Buat dua akun latihan melalui Auth, salin `.env.example` ke `.env`, isi Project URL dan **publishable key**, lalu jalankan `npm ci`, `node --env-file=.env client-demo.mjs --signup` (bila akun baru), dan `npm run demo`. Ulangi dengan akun kedua. Jangan tampilkan email/password asli, service role/secret key, atau isi `.env` pada screenshot/Git.
 
 ![Referensi Auth dan policy pada source SQL Supabase](screenshots/13_supabase_source.png)
 

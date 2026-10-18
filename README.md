@@ -1,44 +1,42 @@
-# meet7CloudService — Lab 07 BaaS, RLS, dan pgvector
-
-<!-- lecture-materials:start -->
-
-## Materi teori sebelum praktikum
-
-- [Pertemuan 07: Supabase](slides/Teori_Pertemuan_07.pptx)
-
-Slide menghubungkan konsep, kasus kerja, bacaan/video resmi, dan langkah lab.
-
-<!-- lecture-materials:end -->
+# Lab 07 — RLS dan pgvector lokal
 
 **Kebijakan kelas:** Lab ini latihan formatif, tanpa tugas, nilai, atau penyerahan terpisah. Satu proyek besar dikerjakan oleh kelompok **3 orang**, dengan presentasi checkpoint minggu 7 (UTS) dan hasil akhir minggu 14 (UAS). Simpan hasil lab hanya bila berguna sebagai referensi atau bukti proses proyek. Baca [brief proyek kelompok](PROYEK_KELOMPOK.md). Bobot resmi tetap mengikuti RPS/LMS.
 
-Praktikum COMP6991031 sesi 07. Kasus kerja: dua staf menyimpan catatan pada database yang sama, tetapi masing-masing hanya boleh membaca dan mengubah catatannya sendiri. Jalur wajib memakai PostgreSQL dan pgvector lokal melalui Docker Compose. Jalur Supabase memperlihatkan Auth, policy `auth.uid()`, dan Storage bila akun tersedia.
+Pelajari pembatasan catatan Alice/Bob dan pencarian jarak vektor menggunakan PostgreSQL lokal. Seluruh praktik inti berjalan di laptop melalui Docker Desktop dan PowerShell. Tidak ada akun cloud atau instalasi Node untuk jalur ini.
 
-**Mulai dari [modul mahasiswa lengkap dengan kunci](MODUL_MAHASISWA.md).** Versi PDF berada di [modul mahasiswa](MODUL_MAHASISWA.pdf); slide pada `slides/`. Gambar Docker, terminal, dan Adminer ada di `screenshots/`. Repo kelas: [SeedFlora/meet7CloudService](https://github.com/SeedFlora/meet7CloudService).
+## Mulai
 
-## Mulai cepat di laptop
+Ikuti [modul langkah demi langkah](MODUL_MAHASISWA.md) atau [PDF](MODUL_MAHASISWA.pdf). Modul menjelaskan folder kerja, fungsi perintah, hasil yang diharapkan, screenshot acuan, dan pembahasan.
 
-Siapkan Docker Desktop/Engine. Dari root repo, salin contoh password menjadi file lokal yang diabaikan Git:
+Untuk salinan baru, buka PowerShell di folder tempat menyimpan proyek:
 
 ```powershell
-Copy-Item .\secrets\db_password.example.txt .\secrets\db_password.txt
+git clone https://github.com/SeedFlora/meet7CloudService.git meet7CloudService-local
+Set-Location .\meet7CloudService-local
+Copy-Item .\.env.example .\.env
+docker version
+docker compose config --quiet
 docker compose --profile debug up -d --wait
 docker compose ps
-Get-Content -Raw .\local-rls-demo.sql | docker compose exec -T db psql -v ON_ERROR_STOP=1 -U labadmin -d lab07
-Get-Content -Raw .\vector-local-demo.sql | docker compose exec -T db psql -v ON_ERROR_STOP=1 -U labadmin -d lab07
-& .\tests\challenge.ps1
 ```
 
-Di Linux/Codespaces/Git Bash, gunakan `cp secrets/db_password.example.txt secrets/db_password.txt`, lalu jalankan dua file SQL dengan redirection `< file.sql` dan `bash tests/challenge.sh`. Buka Adminer di <http://127.0.0.1:8087/> untuk melihat tabel. Pilih **PostgreSQL**, server `db`, user `labadmin`, database `lab07`, dan isi password dari file lokal. Login sebagai pemilik tabel akan menampilkan kedua baris; bukti isolasi RLS harus memakai `SET ROLE lab_alice` dan `lab_bob` seperti di modul.
+Hasil: `db` healthy dan `adminer` berjalan. Adminer tersedia di <http://127.0.0.1:8087/>. Password lokal berada pada `POSTGRES_PASSWORD` di `.env`; file secret terpisah tidak diperlukan. Jangan menimpa `.env` pada clone lama yang sudah memiliki data: password harus tetap sama dengan password saat volume pertama dibuat.
 
-`vector-local-demo.sql` berisi vektor mainan tiga dimensi untuk memahami operator jarak; Lab 11 memakai embedding model untuk RAG. `schema.sql` dan `client-demo.mjs` adalah jalur Supabase opsional, bukan untuk database lokal ini. Jangan menaruh key rahasia atau password di Git.
-
-Untuk klien Supabase opsional, gunakan **Node.js minimal 22.0.0** sesuai `@supabase/supabase-js` yang terkunci pada `package-lock.json` dan [dukungan runtime Supabase](https://supabase.com/changelog/45715-deprecation-notice-dropping-support-for-node-js-20). Dari root repo jalankan `node --version` dan `npm --version`; pastikan hasil Node `v22.0.0` atau lebih baru sebelum `npm ci`. Ikuti [langkah Supabase pada modul](MODUL_MAHASISWA.md#4-jalur-supabase-tambahan) untuk konfigurasi dan uji dua akun. Jalur Docker/SQL lokal tidak memerlukan Node.
-
-Sesudah menyimpan bukti pribadi dan laporan, bersihkan container tanpa menghapus volume:
+Jalankan SQL dari folder yang sama:
 
 ```powershell
-docker compose --profile debug down
+Get-Content -Raw .\local-rls-demo.sql | docker compose exec -T db psql -v ON_ERROR_STOP=1 -U labadmin -d lab07
+Get-Content -Raw .\vector-local-demo.sql | docker compose exec -T db psql -v ON_ERROR_STOP=1 -U labadmin -d lab07
 ```
 
-Rujukan: [RLS Supabase](https://supabase.com/docs/guides/database/postgres/row-level-security), [vector columns](https://supabase.com/docs/guides/ai/vector-columns), dan [pgvector](https://github.com/pgvector/pgvector).
+SQL pertama membuktikan RLS per role. SQL kedua mengurutkan Docker, Container, Database menurut jarak vektor. Baca penjelasan hasil pada modul sebelum lanjut.
+
+## Materi pendamping
+
+- [Teori Supabase](slides/Teori_Pertemuan_07.pptx)
+- [Slide praktik lokal](slides/LAB07_RLS_pgvector_Bukti_Live.pptx)
+- [Proyek kelompok](PROYEK_KELOMPOK.md)
+
+Jalur Supabase Auth, RLS `auth.uid()`, dan Storage ada di bagian tambahan modul. Jalur itu memerlukan proyek milik peserta dan terpisah dari database lokal. `schema.sql` khusus Supabase; `local-rls-demo.sql` khusus lokal.
+
+Selesai praktik, jalankan `docker compose --profile debug down`. Volume tetap tersimpan. Laporan, screenshot pribadi, checker, dan push ke repo pribadi merupakan latihan tambahan.

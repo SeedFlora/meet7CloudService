@@ -37,6 +37,8 @@ SQL pertama membuktikan RLS per role. SQL kedua mengurutkan Docker, Container, D
 - [Slide praktik lokal](slides/LAB07_RLS_pgvector_Bukti_Live.pptx)
 - [Proyek kelompok](PROYEK_KELOMPOK.md)
 
+**Tambahan AI (opsional):** demo vektor Lab 07 memakai 3 dimensi agar operator `<->` mudah dipahami. Embedding asli memakai 384 dimensi: tabel `vector(384)`, indeks HNSW `vector_cosine_ops`, dan jarak cosine `<=>` (SQL ini diuji pada container Lab 07, 16 November 2026). Vektor 384 dimensi dapat dihasilkan tanpa GPU: Lab 11 (`EMBED_MODE=semantic`, `EMBED_MODEL=sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`), Transformers.js `Xenova/paraphrase-multilingual-MiniLM-L12-v2`, atau Edge Function Supabase `gte-small` (bahasa Inggris). Lihat slide tambahan di `slides/LAB07_RLS_pgvector_Bukti_Live.pptx`.
+
 Jalur Supabase Auth, RLS `auth.uid()`, dan Storage ada di bagian tambahan modul. Jalur itu memerlukan proyek milik peserta dan terpisah dari database lokal. `schema.sql` khusus Supabase; `local-rls-demo.sql` khusus lokal.
 
 Selesai praktik, jalankan `docker compose --profile debug down`. Volume tetap tersimpan. Laporan, screenshot pribadi, checker, dan push ke repo pribadi merupakan latihan tambahan.
